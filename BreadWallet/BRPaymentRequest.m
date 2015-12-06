@@ -28,7 +28,7 @@
 #import "NSString+Bitcoin.h"
 #import "NSMutableData+Bitcoin.h"
 
-#define USER_AGENT [NSString stringWithFormat:@"/breadwallet:%@/",\
+#define USER_AGENT [NSString stringWithFormat:@"/Loaf:%@/",\
                     NSBundle.mainBundle.infoDictionary[@"CFBundleShortVersionString"]]
 
 // BIP21 bitcoin URI object https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki
@@ -82,13 +82,13 @@
     NSURL *url = [NSURL URLWithString:s];
     
     if (! url || ! url.scheme) {
-        url = [NSURL URLWithString:[NSString stringWithFormat:@"bitcoin://%@", s]];
+        url = [NSURL URLWithString:[NSString stringWithFormat:@"litecoin://%@", s]];
     }
     else if (! url.host && url.resourceSpecifier) {
         url = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@", url.scheme, url.resourceSpecifier]];
     }
     
-    if ([url.scheme isEqual:@"bitcoin"]) {
+    if ([url.scheme isEqual:@"litecoin"]) {
         self.paymentAddress = url.host;
     
         //TODO: correctly handle unknown but required url arguments (by reporting the request invalid)
@@ -121,7 +121,7 @@
 {
     if (! self.paymentAddress) return nil;
 
-    NSMutableString *s = [NSMutableString stringWithFormat:@"bitcoin:%@", self.paymentAddress];
+    NSMutableString *s = [NSMutableString stringWithFormat:@"litecoin:%@", self.paymentAddress];
     NSMutableArray *q = [NSMutableArray array];
     
     if (self.amount > 0) {
@@ -214,11 +214,11 @@ completion:(void (^)(BRPaymentProtocolRequest *req, NSError *error))completion
                                       cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:timeout] : nil;
 
     [req setValue:USER_AGENT forHTTPHeaderField:@"User-Agent"]; // BIP74 user-agent (bitpay, unpublished)
-    [req setValue:@"application/bitcoin-paymentrequest" forHTTPHeaderField:@"Accept"];
+    [req setValue:@"application/litecoin-paymentrequest" forHTTPHeaderField:@"Accept"];
 //  [req addValue:@"text/uri-list" forHTTPHeaderField:@"Accept"]; // breaks some BIP72 implementations, notably bitpay's
 
     if (! req) {
-        completion(nil, [NSError errorWithDomain:@"BreadWallet" code:417
+        completion(nil, [NSError errorWithDomain:@"Loaf" code:417
                          userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"bad payment request URL", nil)}]);
         return;
     }
@@ -237,7 +237,7 @@ completion:(void (^)(BRPaymentProtocolRequest *req, NSError *error))completion
         network = @"test";
 #endif
         
-        if ([response.MIMEType.lowercaseString isEqual:@"application/bitcoin-paymentrequest"] && data.length <= 50000) {
+        if ([response.MIMEType.lowercaseString isEqual:@"application/litecoin-paymentrequest"] && data.length <= 50000) {
             req = [BRPaymentProtocolRequest requestWithData:data];
         }
         else if ([response.MIMEType.lowercaseString isEqual:@"text/uri-list"] && data.length <= 50000) {
@@ -252,12 +252,12 @@ completion:(void (^)(BRPaymentProtocolRequest *req, NSError *error))completion
         if (! req) {
             NSLog(@"unexpected response from %@:\n%@", u.host,
                   [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-            completion(nil, [NSError errorWithDomain:@"BreadWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
+            completion(nil, [NSError errorWithDomain:@"Loaf" code:417 userInfo:@{NSLocalizedDescriptionKey:
                              [NSString stringWithFormat:NSLocalizedString(@"unexpected response from %@", nil), u.host]
                             }]);
         }
         else if (! [req.details.network isEqual:network]) {
-            completion(nil, [NSError errorWithDomain:@"BreadWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
+            completion(nil, [NSError errorWithDomain:@"Loaf" code:417 userInfo:@{NSLocalizedDescriptionKey:
                              [NSString stringWithFormat:NSLocalizedString(@"requested network \"%@\" instead of \"%@\"",
                                                                           nil), req.details.network, network]}]);
         }
@@ -272,7 +272,7 @@ completion:(void (^)(BRPaymentProtocolACK *ack, NSError *error))completion
 
     if (! u) {
         if (completion) {
-            completion(nil, [NSError errorWithDomain:@"BreadWallet" code:417
+            completion(nil, [NSError errorWithDomain:@"Loaf" code:417
                              userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"bad payment URL", nil)}]);
         }
         
@@ -283,8 +283,8 @@ completion:(void (^)(BRPaymentProtocolACK *ack, NSError *error))completion
                                 cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:timeout];
 
     [req setValue:USER_AGENT forHTTPHeaderField:@"User-Agent"];
-    [req setValue:@"application/bitcoin-payment" forHTTPHeaderField:@"Content-Type"];
-    [req addValue:@"application/bitcoin-paymentack" forHTTPHeaderField:@"Accept"];
+    [req setValue:@"application/litecoin-payment" forHTTPHeaderField:@"Content-Type"];
+    [req addValue:@"application/litecoin-paymentack" forHTTPHeaderField:@"Accept"];
     [req setHTTPMethod:@"POST"];
     [req setHTTPBody:payment.data];
 
@@ -297,7 +297,7 @@ completion:(void (^)(BRPaymentProtocolACK *ack, NSError *error))completion
         
         BRPaymentProtocolACK *ack = nil;
         
-        if ([response.MIMEType.lowercaseString isEqual:@"application/bitcoin-paymentack"] && data.length <= 50000) {
+        if ([response.MIMEType.lowercaseString isEqual:@"application/litecoin-paymentack"] && data.length <= 50000) {
             ack = [BRPaymentProtocolACK ackWithData:data];
         }
 
@@ -305,7 +305,7 @@ completion:(void (^)(BRPaymentProtocolACK *ack, NSError *error))completion
             NSLog(@"unexpected response from %@:\n%@", u.host,
                   [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
             if (completion) {
-                completion(nil, [NSError errorWithDomain:@"BreadWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
+                completion(nil, [NSError errorWithDomain:@"Loaf" code:417 userInfo:@{NSLocalizedDescriptionKey:
                                  [NSString stringWithFormat:NSLocalizedString(@"unexpected response from %@", nil),
                                   u.host]}]);
             }
