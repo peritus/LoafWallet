@@ -47,6 +47,7 @@
 - (NSData *)SHA1;
 - (NSData *)SHA256;
 - (NSData *)SHA256_2;
+- (NSData *)SCRYPT;
 - (NSData *)RMD160;
 - (NSData *)hash160;
 - (NSData *)reverse;

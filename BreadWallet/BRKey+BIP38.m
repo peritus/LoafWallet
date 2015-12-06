@@ -82,7 +82,7 @@ static void blockmix_salsa8(uint64_t *dest, const uint64_t *src, uint64_t *b, ui
 }
 
 // scrypt key derivation: http://www.tarsnap.com/scrypt.html
-static NSData *scrypt(NSData *password, NSData *salt, int64_t n, uint32_t r, uint32_t p, NSUInteger length)
+NSData *scrypt(NSData *password, NSData *salt, int64_t n, uint32_t r, uint32_t p, NSUInteger length)
 {
     NSMutableData *d = [NSMutableData secureDataWithLength:length];
     uint8_t b[128*r*p];
