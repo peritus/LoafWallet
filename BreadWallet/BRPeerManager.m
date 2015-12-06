@@ -559,10 +559,10 @@ static const char *dns_seeds[] = {
 // NOTE: this is only accurate for the last two weeks worth of blocks, other timestamps are estimated from checkpoints
 - (NSTimeInterval)timestampForBlockHeight:(uint32_t)blockHeight
 {
-    if (blockHeight == TX_UNCONFIRMED) return (self.lastBlock.timestamp - NSTimeIntervalSince1970) + 10*60; //next block
+    if (blockHeight == TX_UNCONFIRMED) return (self.lastBlock.timestamp - NSTimeIntervalSince1970) + 2.5*60; //next block
 
-    if (blockHeight >= self.lastBlockHeight) { // future block, assume 10 minutes per block after last block
-        return (self.lastBlock.timestamp - NSTimeIntervalSince1970) + (blockHeight - self.lastBlockHeight)*10*60;
+    if (blockHeight >= self.lastBlockHeight) { // future block, assume 2.5 minutes per block after last block
+        return (self.lastBlock.timestamp - NSTimeIntervalSince1970) + (blockHeight - self.lastBlockHeight)*2.5*60;
     }
 
     if (_blocks.count > 0) {

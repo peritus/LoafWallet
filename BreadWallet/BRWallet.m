@@ -531,7 +531,7 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
     return YES;
 }
 
-// returns true if transaction won't be valid by blockHeight + 1 or within the next 10 minutes
+// returns true if transaction won't be valid by blockHeight + 1 or within the next 2.5 minutes
 - (BOOL)transactionIsPostdated:(BRTransaction *)transaction atBlockHeight:(uint32_t)blockHeight
 {
     if (transaction.blockHeight != TX_UNCONFIRMED) return NO; // confirmed transactions are not postdated
@@ -545,7 +545,7 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
     if (transaction.lockTime <= blockHeight + 1) return NO;
 
     if (transaction.lockTime >= TX_MAX_LOCK_HEIGHT &&
-        transaction.lockTime < [NSDate timeIntervalSinceReferenceDate] + NSTimeIntervalSince1970 + 10*60) return NO;
+        transaction.lockTime < [NSDate timeIntervalSinceReferenceDate] + NSTimeIntervalSince1970 + 2.5*60) return NO;
 
     for (NSNumber *sequence in transaction.inputSequences) { // lockTime is ignored if all sequence numbers are final
         if (sequence.unsignedIntValue < UINT32_MAX) return YES;
