@@ -31,6 +31,7 @@
 @interface BRMerkleBlock : NSObject
 
 @property (nonatomic, readonly) NSData *blockHash;
+@property (nonatomic, readonly) NSData *powHash;
 @property (nonatomic, readonly) uint32_t version;
 @property (nonatomic, readonly) NSData *prevBlock;
 @property (nonatomic, readonly) NSData *merkleRoot;

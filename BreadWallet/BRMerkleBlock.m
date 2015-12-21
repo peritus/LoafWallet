@@ -110,6 +110,8 @@
     [d appendUInt32:_nonce];
     _blockHash = d.SHA256_2;
 
+    _powHash = [message subdataWithRange:NSMakeRange(0, 80)].SCRYPT;
+
     return self;
 }
 
@@ -142,7 +144,7 @@ totalTransactions:(uint32_t)totalTransactions hashes:(NSData *)hashes flags:(NSD
     // target is in "compact" format, where the most significant byte is the size of resulting value in bytes, the next
     // bit is the sign, and the remaining 23bits is the value after having been right shifted by (size - 3)*8 bits
     static const uint32_t maxsize = MAX_PROOF_OF_WORK >> 24, maxtarget = MAX_PROOF_OF_WORK & 0x00ffffffu;
-    const uint32_t *b = _blockHash.bytes, size = _target >> 24, target = _target & 0x00ffffffu;
+    const uint32_t *b = _powHash.bytes, size = _target >> 24, target = _target & 0x00ffffffu;
     NSMutableData *d = [NSMutableData data];
     int hashIdx = 0, flagIdx = 0;
     NSData *merkleRoot =
