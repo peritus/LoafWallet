@@ -110,7 +110,7 @@
     [d appendUInt32:_nonce];
     _blockHash = d.SHA256_2;
 
-    _powHash = [message subdataWithRange:NSMakeRange(0, 80)].SCRYPT;
+    _powHash = d.SCRYPT;
 
     return self;
 }
